@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import pickle
+
+# Load dataset
+df = pd.read_csv("diabetes.csv")
+
+# Replace zeros with NaN (same preprocessing)
+cols = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
+df[cols] = df[cols].replace(0, np.nan)
+
+# Fill missing values with mean (same preprocessing)
+df.fillna(df.mean(), inplace=True)
+
+# Split into X and y (same columns used during model training)
+X = df.drop("Outcome", axis=1)
+y = df["Outcome"]
+
+# Same train-test split as original model
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Create scaler and fit ONLY on training data
+scaler = StandardScaler()
+scaler.fit(X_train)
+
+# Save scaler to scaler.pkl
+pickle.dump(scaler, open("scaler.pkl", "wb"))
+
+print("scaler.pkl created successfully!")
